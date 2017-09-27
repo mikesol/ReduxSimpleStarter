@@ -19,9 +19,7 @@ export default function posts(state = {}, action) {
         [action.payload.data.id]: action.payload.data
       };
     case DELETE_POST:
-      let copy = Object.assign({}, state);
-      delete copy[action.payload];
-      return copy;
+      return _.omit(state, action.payload);
     }
   return state;
 }
