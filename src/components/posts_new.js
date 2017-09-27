@@ -2,8 +2,8 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from 'redux-form';
 import _ from 'lodash';
-import axios from 'axios';
-import MockAdapter from 'axios-mock-adapter';
+import { Link } from 'react-router-dom';
+import { createPost } from '../actions';
 
 
 class PostsNew extends Component {
@@ -21,7 +21,9 @@ class PostsNew extends Component {
     );
   }
   onSubmit(values) {
-    console.log('on submit called', values);
+    this.props.createPost(values, () => {
+      this.props.history.push('/');
+    });
   }
   render() {
     const { handleSubmit } = this.props;
@@ -33,6 +35,7 @@ class PostsNew extends Component {
           <Field label="Tags" name="categories" component={this.renderField}></Field>
           <Field label="Post Content" name="content" component={this.renderField}></Field>
           <button type="submit" className="btn btn-primary">Submit</button>
+          <Link to="/" className="btn btn-danger">Cancel</Link>
         </form>
       </div>
     );
@@ -58,4 +61,6 @@ export default reduxForm({
   validate,
   // name of the form
   form: 'PostsNewForm'
-})(PostsNew);
+})(
+  connect(null, {createPost})(PostsNew)
+);

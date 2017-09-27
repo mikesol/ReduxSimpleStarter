@@ -1,5 +1,5 @@
-import { fetchPosts } from '../../src/actions';
-import { FETCH_POSTS } from '../../src/actions';
+import { createPost } from '../../src/actions';
+import { CREATE_POST } from '../../src/actions';
 import { ROOT_URL } from '../../src/actions';
 import { API_KEY } from '../../src/actions';
 import promise from 'redux-promise';
@@ -11,36 +11,32 @@ const mockStore = configureMockStore([promise])
 
 describe('async actions', () => {
 
-  it('should fetch posts on a FETCH_POSTS request', () => {
-    const mockEntry = [
-        {
-          id: 4,
+  it('should create post on a CREATE_POST request', () => {
+    const mockPost = {
           title: 'foo',
           categories: 'bar',
           content: 'this is some content'
-        },
-        {
-          id: 5,
-          title: 'bar',
-          categories: 'bar',
-          content: 'this is some content'
+    };
+    const mockResult = {
+        "4": {
+          id: 4,
+          ...mockPost
         }
-    ];
+    };
 
     const mock = new MockAdapter(axios);
-    mock.onGet(`${ROOT_URL}/posts${API_KEY}`)
-      .reply(200, mockEntry);
+    mock.onPost(`${ROOT_URL}/posts${API_KEY}`, mockPost)
+      .reply(200, mockResult);
 
     const expectedActions = [{
-      type: FETCH_POSTS,
-      payload: {data: mockEntry}
+      type: CREATE_POST,
+      payload: {data: mockResult}
     }];
     const store = mockStore({
       posts: {}
     });
 
-
-    return store.dispatch(fetchPosts()).then(() => {
+    return store.dispatch(createPost(mockPost,(res)=>res)).then(() => {
       // return of async actions
       expect(store.getActions()[0].type).toEqual(expectedActions[0].type)
       expect(store.getActions()[0].payload.data).toEqual(expectedActions[0].payload.data)
